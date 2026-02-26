@@ -1,0 +1,16 @@
+.git
+.gitignore
+.github
+.next
+node_modules
+npm-debug.log*
+
+# Local env files — never bake secrets into the image
+.env
+.env.local
+.env.*.local
+
+# Dev / docs / infra scripts (not needed inside the container)
+*.md
+screenshots/
+infra/
