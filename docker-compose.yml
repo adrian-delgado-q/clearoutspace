@@ -1,11 +1,16 @@
-# ClearoutSpace – Docker Compose (VPS)
+# ClearoutSpaces – Docker Compose
+#
+# ── Local dev ─────────────────────────────────────────────────────────────────
+#   docker compose up -d
+#   → http://localhost:3000
+#
+# ── VPS / production (with nginx) ────────────────────────────────────────────
+#   docker compose --profile vps up -d
+#   → nginx listens on 80/443, proxies to app on internal network
 #
 # ── First-time setup ──────────────────────────────────────────────────────────
-#   1. Copy .env.example → .env and fill in every value
-#   2. Replace GITHUB_USERNAME below with your GitHub username/org
-#   3. sudo docker compose pull && sudo docker compose up -d
-#
-# Nginx (nginx.conf.example) proxies clearoutspace.ca → 127.0.0.1:3000
+#   cp .env.example .env   # fill in secrets
+#   docker compose pull && docker compose up -d
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -28,15 +33,35 @@ services:
 
   # ── Next.js app ─────────────────────────────────────────────────────────────
   app:
-    # ↓↓  Replace GITHUB_USERNAME with your GitHub username or org  ↓↓
-    image: ghcr.io/GITHUB_USERNAME/clearoutspace:latest
+    image: ghcr.io/adrian-delgado-q/clearoutspace:latest
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3000:3000"   # exposed only to localhost; nginx reverse-proxies it
+      - "3000:3000"   # http://localhost:3000  (dev)
     env_file: .env
     depends_on:
       postgres:
         condition: service_healthy
 
+  # ── Nginx reverse-proxy (VPS only) ──────────────────────────────────────────
+  # Activated with:  docker compose --profile vps up -d
+  # On the VPS nginx handles SSL termination and routes clearoutspace.ca → app.
+  nginx:
+    profiles:
+      - vps
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/clearoutspace.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro  # certbot webroot for ACME challenge
+    depends_on:
+      - app
+
 volumes:
   pgdata:
+    labels:
+      backup: daily
+      retention: 30d

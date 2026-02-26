@@ -25,18 +25,25 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs \
- && adduser  --system --uid 1001 nextjs
+    && adduser  --system --uid 1001 nextjs
 
 # Standalone output contains a self-contained server.js + trimmed node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public           ./public
 
-# Add Prisma on top of the standalone node_modules so migrations can run
-COPY --from=builder /app/node_modules/.prisma    ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma    ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma     ./node_modules/prisma
-COPY --from=builder /app/prisma                  ./prisma
+# Add Prisma generated client (needed by the app at runtime)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+
+# Install Prisma CLI with its full dependency tree into the standalone node_modules.
+# Running without --ignore-scripts allows the postinstall to download the correct
+# linux-musl engine binaries (schema-engine + query-engine) at image-build time.
+COPY package.json package-lock.json ./
+RUN npm install prisma \
+    && npm cache clean --force \
+    && chown -R nextjs:nodejs /app/node_modules/@prisma /app/node_modules/prisma
+
+COPY --from=builder /app/prisma ./prisma
 
 USER nextjs
 
