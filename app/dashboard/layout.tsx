@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         {/* Logo */}
         <div className="px-5 py-5 border-b border-stone-200">
           <Link href="/" className="text-lg font-bold text-slate-900 tracking-tight">
-            Clearout<span className="text-emerald-700">Space</span>
+            Clearout<span className="text-emerald-700">Spaces</span>
           </Link>
           <p className="text-xs text-slate-400 mt-0.5">Staff Dashboard</p>
         </div>

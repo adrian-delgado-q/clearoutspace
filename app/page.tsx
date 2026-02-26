@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "ClearoutSpace – Junk Removal & Apartment Clearouts in Toronto, Vancouver & Montreal",
+  title: "ClearoutSpaces – Junk Removal & Apartment Clearouts in Toronto, Vancouver & Montreal",
   description:
     "Same-day junk removal, apartment clearouts & estate cleanouts in Toronto, Vancouver, and Montreal. Get a free WhatsApp quote in minutes. Fully insured, eco-friendly.",
 };
@@ -56,10 +56,28 @@ const whatWeHandle = [
   "Same-week availability across Toronto, Vancouver & Montreal",
 ];
 
+const resellSteps = [
+  {
+    step: "1",
+    title: "Tell Us What You Have",
+    body: "Send us photos of furniture, appliances, or valuables via WhatsApp and we'll give you an honest resale estimate.",
+  },
+  {
+    step: "2",
+    title: "We Handle the Listings",
+    body: "Our team lists your items on Facebook Marketplace and other local platforms, coordinates viewings, and manages pickup.",
+  },
+  {
+    step: "3",
+    title: "Proceeds Offset Your Cost",
+    body: "Whatever sells goes straight toward your clearout invoice — reducing or even eliminating what you owe.",
+  },
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "ClearoutSpace",
+  name: "ClearoutSpaces",
   description:
     "Fast, affordable apartment cleanouts and cleaning services across Toronto, Vancouver, and Montreal.",
   telephone: `+${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "12268992255"}`,
@@ -72,7 +90,7 @@ const jsonLd = {
     { "@type": "City", name: "Vancouver" },
     { "@type": "City", name: "Montreal" },
   ],
-  serviceType: ["Junk Removal", "Apartment Cleanout", "Estate Cleanout", "Professional Cleaning"],
+  serviceType: ["Junk Removal", "Apartment Cleanout", "Estate Cleanout", "Professional Cleaning", "Item Resale Coordination"],
   sameAs: [],
 };
 
@@ -114,7 +132,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="text-2xl font-bold tracking-tight">
-            Clearout<span className="text-emerald-700">Space</span>
+            Clearout<span className="text-emerald-700">Spaces</span>
           </Link>
           <Link
             href={WA_HREF}
@@ -164,7 +182,7 @@ export default function Home() {
               <div className="overflow-hidden rounded-2xl border border-stone-300 bg-white shadow-sm">
                 <img
                   src="/truckimages.png"
-                  alt="ClearoutSpace truck ready for apartment clearout"
+                  alt="ClearoutSpaces truck ready for apartment clearout"
                   className="h-[420px] w-full object-cover"
                 />
               </div>
@@ -247,11 +265,61 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Resell & Save section ─────────────────────────────────────── */}
+        <section className="border-b border-stone-200 bg-emerald-50 py-12">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <div className="text-center">
+              <span className="inline-block rounded-full bg-emerald-100 px-4 py-1.5 text-sm font-semibold text-emerald-700">
+                Resell &amp; Save
+              </span>
+              <h2 className="mt-4 text-2xl font-extrabold sm:text-4xl">
+                Turn Your Old Items Into{" "}
+                <span className="text-emerald-700">Cash</span>
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 sm:text-lg">
+                Got furniture, appliances, or valuables worth selling? If there&apos;s enough
+                lead time before your clearout, we&apos;ll coordinate the resale of your items —
+                and the proceeds go directly toward offsetting your clearout cost.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+              {resellSteps.map((s) => (
+                <div
+                  key={s.step}
+                  className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-700 text-base font-extrabold text-white">
+                    {s.step}
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold text-slate-900">{s.title}</h3>
+                  <p className="mt-2 text-sm text-slate-600 sm:text-base">{s.body}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 rounded-2xl border border-emerald-200 bg-white p-6 text-center">
+              <p className="text-base font-medium text-slate-700 sm:text-lg">
+                Interested in the resell service? Mention it when you message us and we&apos;ll
+                assess your items together — no commitment needed.
+              </p>
+              <Link
+                href={WA_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-block rounded-xl bg-emerald-700 px-6 py-3 text-base font-bold text-white transition hover:bg-emerald-800 sm:text-lg"
+              >
+                Tell Us What You Have
+              </Link>
+            </div>
+          </div>
+        </section>
+
         <section className="bg-stone-50 py-12">
           <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 sm:px-6 md:grid-cols-2">
             <div className="rounded-2xl border border-stone-200 bg-white p-6">
               <h3 className="text-2xl font-extrabold sm:text-3xl">
-                Why Choose Clearout<span className="text-emerald-700">Space</span>?
+                Why Choose Clearout<span className="text-emerald-700">Spaces</span>?
               </h3>
               <div className="mt-6 grid gap-3 text-sm text-slate-700 sm:grid-cols-2 sm:text-base">
                 {whyChoose.map((item) => (
@@ -291,7 +359,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <Link href="/" className="text-lg font-bold text-slate-900 hover:opacity-80 transition">
-              Clearout<span className="text-emerald-700">Space</span>
+              Clearout<span className="text-emerald-700">Spaces</span>
             </Link>
 
             {socials.length > 0 && (

@@ -18,8 +18,8 @@ const BASE_URL = "https://clearoutspace.ca";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "ClearoutSpace – Junk Removal & Estate Clearouts",
-    template: "%s – ClearoutSpace",
+    default: "ClearoutSpaces – Junk Removal & Estate Clearouts",
+    template: "%s – ClearoutSpaces",
   },
   description:
     "Fast, affordable apartment and estate cleanouts in Toronto, Vancouver, and Montreal. Get a free quote on WhatsApp in minutes.",
@@ -44,10 +44,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: BASE_URL,
-    title: "ClearoutSpace – Junk Removal & Estate Clearouts",
+    title: "ClearoutSpaces – Junk Removal & Estate Clearouts",
     description:
       "Fast, affordable apartment and estate cleanouts in Toronto, Vancouver, and Montreal. Get a free quote on WhatsApp in minutes.",
-    siteName: "ClearoutSpace",
+    siteName: "ClearoutSpaces",
     images: [
       {
         url: "/truckimages.png",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClearoutSpace – Junk Removal & Estate Clearouts",
+    title: "ClearoutSpaces – Junk Removal & Estate Clearouts",
     description:
       "Fast, affordable apartment and estate cleanouts in Toronto, Vancouver, and Montreal. Get a free quote on WhatsApp in minutes.",
     images: ["/truckimages.png"],
