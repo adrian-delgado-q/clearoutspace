@@ -1,96 +1,78 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import CookieBanner from "./_components/CookieBanner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const BASE_URL = "https://clearoutspace.ca";
+const BASE_URL = "https://clearoutspaces.ca";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "ClearoutSpaces – Junk Removal & Estate Clearouts",
-    template: "%s – ClearoutSpaces",
+    default: "ClearoutSpaces – Move-Out Done Right",
+    template: "%s | ClearoutSpaces",
   },
   description:
-    "Fast, affordable apartment and estate cleanouts in Toronto, Vancouver, and Montreal. Get a free quote on WhatsApp in minutes.",
+    "Clearout, deposit-ready cleaning, and optional listing management — structured, coordinated, condo-ready. Toronto's move-out specialists.",
   keywords: [
+    "move out clearout Toronto",
+    "condo clearout Toronto",
     "junk removal Toronto",
-    "junk removal Vancouver",
-    "junk removal Montreal",
-    "apartment clearout Toronto",
-    "estate cleanout service",
-    "furniture removal service",
-    "same day junk removal",
-    "junk hauling near me",
-    "affordable junk removal",
-    "full apartment cleanout",
-    "move out cleanout",
-    "hoarding cleanout",
-    "appliance removal",
-    "junk pickup Toronto",
-    "eco friendly junk removal",
-    "ClearoutSpace",
+    "move out cleaning Toronto",
+    "furniture resale Toronto",
+    "estate clearout Toronto",
+    "listing management Toronto",
+    "ClearoutSpaces",
   ],
   openGraph: {
     type: "website",
     url: BASE_URL,
-    title: "ClearoutSpaces – Junk Removal & Estate Clearouts",
+    title: "ClearoutSpaces – Move-Out Done Right",
     description:
-      "Fast, affordable apartment and estate cleanouts in Toronto, Vancouver, and Montreal. Get a free quote on WhatsApp in minutes.",
+      "Clearout. Deposit-ready cleaning. Optional listing management. Structured, coordinated, condo-ready.",
     siteName: "ClearoutSpaces",
-    images: [
-      {
-        url: "/truckimages.png",
-        width: 1200,
-        height: 630,
-        alt: "ClearoutSpace junk removal truck",
-      },
-    ],
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "ClearoutSpaces" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClearoutSpaces – Junk Removal & Estate Clearouts",
-    description:
-      "Fast, affordable apartment and estate cleanouts in Toronto, Vancouver, and Montreal. Get a free quote on WhatsApp in minutes.",
-    images: ["/truckimages.png"],
+    title: "ClearoutSpaces – Move-Out Done Right",
+    description: "Clearout. Deposit-ready cleaning. Optional listing management.",
+    images: ["/og-default.png"],
   },
-  alternates: {
-    canonical: BASE_URL,
-  },
+  alternates: { canonical: BASE_URL },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const analyticsId = process.env.NEXT_PUBLIC_ANALYTICS_ID;
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="en" className={inter.variable}>
+      <body className="bg-white text-[#111111] antialiased">
+        <Navbar />
+        <main className="pb-20 md:pb-0">{children}</main>
+        <Footer />
         <CookieBanner />
+        {analyticsId && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${analyticsId}');`,
+              }}
+            />
+          </>
+        )}
       </body>
     </html>
   );

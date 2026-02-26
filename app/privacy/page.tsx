@@ -10,17 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-stone-100 text-slate-900">
-      {/* Nav */}
-      <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            Clearout<span className="text-emerald-700">Space</span>
-          </Link>
-          <Link href="/" className="text-sm text-slate-500 hover:text-slate-800 transition">
-            ← Back to home
-          </Link>
-        </div>
-      </header>
+
 
       <main className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
         <h1 className="text-4xl font-extrabold text-slate-900 mb-2">Privacy Policy</h1>
@@ -30,11 +20,11 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">1. Who We Are</h2>
             <p>
-              ClearoutSpace ("<strong>we</strong>", "<strong>our</strong>", "<strong>us</strong>")
+              ClearoutSpaces ("<strong>we</strong>", "<strong>our</strong>", "<strong>us</strong>")
               is a junk removal and apartment clearout service operating in Toronto, Vancouver, and
               Montreal, Canada. Our website is{" "}
-              <a href="https://clearoutspace.ca" className="text-emerald-700 underline">
-                clearoutspace.ca
+              <a href="https://clearoutspaces.ca" className="text-emerald-700 underline">
+                clearoutspaces.ca
               </a>
               .
             </p>
@@ -100,8 +90,8 @@ export default function PrivacyPage() {
               We retain your personal data for as long as necessary to fulfil the service and
               comply with applicable Canadian laws. You may request deletion of your data at any
               time by emailing{" "}
-              <a href="mailto:info@clearoutspace.ca" className="text-emerald-700 underline">
-                info@clearoutspace.ca
+              <a href="mailto:info@clearoutspaces.ca" className="text-emerald-700 underline">
+                info@clearoutspaces.ca
               </a>
               .
             </p>
@@ -111,7 +101,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-slate-900 mb-3">6. Your Rights (PIPEDA)</h2>
             <p>
               Under Canada&apos;s <em>Personal Information Protection and Electronic Documents
-              Act</em> (PIPEDA), you have the right to:
+                Act</em> (PIPEDA), you have the right to:
             </p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
               <li>Access the personal information we hold about you</li>
@@ -133,8 +123,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-slate-900 mb-3">8. Contact Us</h2>
             <p>
               For any privacy questions or data requests, please contact us at{" "}
-              <a href="mailto:info@clearoutspace.ca" className="text-emerald-700 underline">
-                info@clearoutspace.ca
+              <a href="mailto:info@clearoutspaces.ca" className="text-emerald-700 underline">
+                info@clearoutspaces.ca
               </a>
               .
             </p>
@@ -145,7 +135,7 @@ export default function PrivacyPage() {
       <footer className="border-t border-stone-200 bg-white mt-12">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-3 px-4 py-5 text-sm text-slate-400 sm:px-6">
           <span className="font-bold text-slate-900">
-            Clearout<span className="text-emerald-700">Space</span>
+            Clearout<span className="text-emerald-700">Spaces</span>
           </span>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-slate-800 transition">Privacy Policy</Link>

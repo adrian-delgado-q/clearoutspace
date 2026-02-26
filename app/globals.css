@@ -1,41 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+@theme inline {
+  /* Design System Colors */
+  --color-bg: #FFFFFF;
+  --color-text-primary: #111111;
+  --color-text-secondary: #5A5A5A;
+  --color-accent-green: #146C54;
+  --color-accent-green-hover: #0f5540;
+  --color-divider: #EAEAEA;
+  --color-alt-section: #F7F7F7;
+  --color-dark-section: #0B0B0B;
+
+  /* Typography */
+  --font-sans: var(--font-inter), "Segoe UI", sans-serif;
+
+  /* Layout */
+  --spacing-section-desktop: 120px;
+  --spacing-section-mobile: 72px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Base resets */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  background: #FFFFFF;
+  color: #111111;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes enterUp {
+/* Section vertical rhythm */
+.section-padding {
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid #146C54;
+  outline-offset: 2px;
+}
+
+/* Modal scroll lock */
+body.modal-open {
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(16px);
   }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.animate-enter-up {
-  animation: enterUp 600ms ease-out both;
+.animate-fade-in {
+  animation: fadeIn 200ms ease both;
 }
 
-.clearoutspace-banner {
-  background:
-    radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14) 0, transparent 45%),
-    radial-gradient(circle at 85% 70%, rgba(0, 0, 0, 0.18) 0, transparent 40%),
-    linear-gradient(120deg, #0f5132, #1f7a52 55%, #16563a);
+.animate-slide-up {
+  animation: slideUp 300ms ease both;
 }

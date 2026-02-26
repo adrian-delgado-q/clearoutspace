@@ -11,7 +11,6 @@ export default function CookieBanner() {
       const consent = localStorage.getItem("cookie_consent");
       if (!consent) setVisible(true);
     } catch {
-      // localStorage unavailable (SSR guard)
     }
   }, []);
 

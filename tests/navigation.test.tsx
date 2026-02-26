@@ -1,96 +1,92 @@
 /**
  * Navigation – availability tests
  *
- * These tests guarantee that every navigable link on the landing page
- * exists, is reachable (has a valid href), and points to the expected
- * destination.  They run in jsdom – no browser or running server required.
+ * Tests run against Navbar and Footer directly (both are synchronous
+ * components) so they work in jsdom without a running server.
  */
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, beforeEach } from "vitest";
-import Home from "@/app/page";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 const WA_BASE = "https://wa.me/";
 
-describe("Navigation – header", () => {
-    beforeEach(() => render(<Home />));
+// ── Navbar ────────────────────────────────────────────────────────────────────
+describe("Navigation – header (Navbar)", () => {
+    beforeEach(() => render(<Navbar />));
 
-    it("renders the header logo link pointing to '/'", () => {
-        // Logo links start with "Clearout" – this avoids matching the mailto link
-        // whose text also contains "clearoutspaces"
-        const logos = screen.getAllByRole("link", { name: /^clearout/i });
-        const headerLogo = logos[0];
-        expect(headerLogo).toBeInTheDocument();
-        expect(headerLogo).toHaveAttribute("href", "/");
+    it("renders the logo link pointing to '/'", () => {
+        const logo = screen.getByRole("link", { name: /clearoutspaces home/i });
+        expect(logo).toBeInTheDocument();
+        expect(logo).toHaveAttribute("href", "/");
     });
 
-    it("header CTA links to a WhatsApp URL", () => {
-        const headerCTAs = screen
-            .getAllByRole("link", { name: /get my free quote/i });
-        // The very first one lives in the header <header> element
-        const headerCTA = headerCTAs[0];
-        expect(headerCTA).toBeInTheDocument();
-        expect(headerCTA.getAttribute("href")).toMatch(WA_BASE);
+    it("renders all primary nav links", () => {
+        // Listings link name is "Listings NEW" due to badge inside <a>
+        expect(screen.getByRole("link", { name: /^listings/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /^services$/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /^pricing$/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /^faq$/i })).toBeInTheDocument();
+    });
+
+    it("nav links point to the correct hrefs", () => {
+        expect(screen.getByRole("link", { name: /^listings/i })).toHaveAttribute("href", "/listings");
+        expect(screen.getByRole("link", { name: /^services$/i })).toHaveAttribute("href", "/services");
+        expect(screen.getByRole("link", { name: /^pricing$/i })).toHaveAttribute("href", "/pricing");
+        expect(screen.getByRole("link", { name: /^faq$/i })).toHaveAttribute("href", "/faq");
+    });
+
+    it("desktop CTA 'Get Estimate' links to WhatsApp", () => {
+        const ctas = screen.getAllByRole("link", { name: /get estimate/i });
+        expect(ctas.length).toBeGreaterThanOrEqual(1);
+        expect(ctas[0].getAttribute("href")).toMatch(WA_BASE);
+    });
+
+    it("no nav link has an empty href", () => {
+        screen.getAllByRole("link").forEach((link) => {
+            expect(link.getAttribute("href")).toBeTruthy();
+        });
     });
 });
 
-describe("Navigation – footer", () => {
-    beforeEach(() => render(<Home />));
+// ── Footer ────────────────────────────────────────────────────────────────────
+describe("Navigation – footer (Footer)", () => {
+    beforeEach(() => render(<Footer />));
 
-    it("renders the footer logo link pointing to '/'", () => {
-        // Logo links start with "Clearout" – excludes the mailto link
-        const logos = screen.getAllByRole("link", { name: /^clearout/i });
-        // Footer logo is the last "Clearout…" link in the document
-        const footerLogo = logos[logos.length - 1];
-        expect(footerLogo).toHaveAttribute("href", "/");
+    it("renders the brand name in the footer", () => {
+        // Footer brand is a div (no logo link), just assert the text is present
+        expect(screen.getByText(/clearoutspaces/i)).toBeInTheDocument();
     });
 
     it("renders a Privacy Policy link pointing to '/privacy'", () => {
-        const privacyLink = screen.getByRole("link", { name: /privacy policy/i });
-        expect(privacyLink).toBeInTheDocument();
-        expect(privacyLink).toHaveAttribute("href", "/privacy");
+        const link = screen.getByRole("link", { name: /privacy policy/i });
+        expect(link).toBeInTheDocument();
+        expect(link).toHaveAttribute("href", "/privacy");
     });
 
     it("renders a Terms link pointing to '/terms'", () => {
-        const termsLink = screen.getByRole("link", { name: /^terms$/i });
-        expect(termsLink).toBeInTheDocument();
-        expect(termsLink).toHaveAttribute("href", "/terms");
+        const link = screen.getByRole("link", { name: /^terms$/i });
+        expect(link).toBeInTheDocument();
+        expect(link).toHaveAttribute("href", "/terms");
     });
 
-    it("renders a Staff Login link pointing to '/login'", () => {
-        const loginLink = screen.getByRole("link", { name: /staff login/i });
-        expect(loginLink).toBeInTheDocument();
-        expect(loginLink).toHaveAttribute("href", "/login");
+    it("renders a 'Chat on WhatsApp' link", () => {
+        const link = screen.getByRole("link", { name: /chat on whatsapp/i });
+        expect(link).toBeInTheDocument();
+        expect(link.getAttribute("href")).toMatch(WA_BASE);
     });
 
-    it("renders the contact email as a mailto link", () => {
-        const emailLink = screen.getByRole("link", { name: /info@clearoutspace\.ca/i });
-        expect(emailLink).toBeInTheDocument();
-        expect(emailLink).toHaveAttribute("href", "mailto:info@clearoutspace.ca");
-    });
-});
-
-describe("Navigation – in-page CTAs", () => {
-    beforeEach(() => render(<Home />));
-
-    it("all WhatsApp CTA links share the same WhatsApp base URL", () => {
-        // Every CTA in the page (header + hero + resell + banner) should point to WhatsApp
-        const waLinks = screen
-            .getAllByRole("link")
-            .filter((l) => (l.getAttribute("href") ?? "").startsWith(WA_BASE));
-        expect(waLinks.length).toBeGreaterThanOrEqual(2);
+    it("renders all six navigation links in the navigate column", () => {
+        const navLinks = ["/services", "/pricing", "/faq", "/listings", "/privacy", "/terms"];
+        navLinks.forEach((href) => {
+            const found = screen.getAllByRole("link").some((l) => l.getAttribute("href") === href);
+            expect(found, `missing link to ${href}`).toBe(true);
+        });
     });
 
-    it("resell section CTA links to a WhatsApp URL", () => {
-        const resellCTA = screen.getByRole("link", { name: /tell us what you have/i });
-        expect(resellCTA).toBeInTheDocument();
-        expect(resellCTA.getAttribute("href")).toMatch(WA_BASE);
-    });
-
-    it("no navigation link has an empty href", () => {
-        const allLinks = screen.getAllByRole("link");
-        allLinks.forEach((link) => {
-            const href = link.getAttribute("href");
-            expect(href).toBeTruthy();
+    it("no footer link has an empty href", () => {
+        screen.getAllByRole("link").forEach((link) => {
+            expect(link.getAttribute("href")).toBeTruthy();
         });
     });
 });

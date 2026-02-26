@@ -27,8 +27,20 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
+// Stub next/image to render a plain <img>
+vi.mock("next/image", () => ({
+  default: ({
+    src,
+    alt,
+    ...rest
+  }: {
+    src: string;
+    alt: string;
+    [key: string]: unknown;
+  }) => <img src={src} alt={alt} />,
+}));
+
 // Stub next/font/google so layout tests don't need network access
 vi.mock("next/font/google", () => ({
-  Geist: () => ({ variable: "--font-geist-sans", className: "" }),
-  Geist_Mono: () => ({ variable: "--font-geist-mono", className: "" }),
+  Inter: () => ({ variable: "--font-inter", className: "" }),
 }));
