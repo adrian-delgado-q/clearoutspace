@@ -3,6 +3,7 @@ import Link from "next/link";
 import Badge from "@/components/ui/Badge";
 import { getPbFileUrl } from "@/lib/pocketbase";
 import { pickupUrgency } from "@/lib/dates";
+import { parseListingTags } from "@/lib/listings";
 import type { Listing } from "@/lib/schemas";
 
 interface ListingCardProps {
@@ -12,6 +13,8 @@ interface ListingCardProps {
 export default function ListingCard({ listing }: ListingCardProps) {
     const { title, slug, price, currency, area, availableUntil, condition, images, status, isFeatured } =
         listing;
+    const category = listing.category?.trim() ?? "";
+    const tags = parseListingTags(listing.tags).slice(0, 2);
 
     const firstImageFilename = images?.[0] ?? null;
     const firstImageUrl = getPbFileUrl(listing.collectionName, listing.id, firstImageFilename, { thumb: "800x600f" });
@@ -77,6 +80,15 @@ export default function ListingCard({ listing }: ListingCardProps) {
                         <span className="text-[13px] text-[#5A5A5A]">{condition}</span>
                     )}
                 </div>
+
+                {(category || tags.length > 0) && (
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                        {category && <Badge variant="muted">{category}</Badge>}
+                        {tags.map((tag) => (
+                            <Badge key={tag} variant="green">{tag}</Badge>
+                        ))}
+                    </div>
+                )}
 
                 {urgency && (
                     <p

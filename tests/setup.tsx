@@ -1,5 +1,29 @@
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import { vi, beforeAll } from "vitest";
+
+// ── Environment variables ────────────────────────────────────────────────────
+beforeAll(() => {
+  process.env.NEXT_PUBLIC_WHATSAPP_URL = "https://wa.me/";
+});
+
+// ── Module mocks ─────────────────────────────────────────────────────────────
+// Mock buildCtaUrl to ensure WhatsApp base URL is always included in tests
+vi.mock("@/lib/whatsapp", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/whatsapp")>("@/lib/whatsapp");
+  return {
+    ...actual,
+    buildCtaUrl: (base: string, source: string, serviceName?: string) => {
+      const body = serviceName
+        ? `Hi! I'm interested in the ${serviceName} service — can I get a quote?`
+        : "";
+      const url =
+        base || "https://wa.me/";
+      return `${url}?text=${encodeURIComponent(
+        body || "Hi! I'm not sure which service fits best — can you help me figure out the right move-out option for my place?",
+      )} | utm_source=${source}`;
+    },
+  };
+});
 
 // ── Next.js shims ────────────────────────────────────────────────────────────
 // Render next/link as a plain <a> so hrefs are directly inspectable
