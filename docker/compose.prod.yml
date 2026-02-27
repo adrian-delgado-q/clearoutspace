@@ -1,0 +1,44 @@
+# ── Production (VPS + Cloudflare Tunnel) ──────────────────────────────────────
+# Pulls pre-built images from GHCR. TLS is handled by Cloudflare — no reverse
+# proxy needed on the server.
+#
+# Tunnel routes (configured in the Cloudflare dashboard):
+#   clearoutspaces.ca      → http://localhost:3000
+#   cms.clearoutspaces.ca  → http://localhost:8090
+#
+# Required .env values: GHCR_USERNAME, IMAGE_TAG, TUNNEL_TOKEN
+# (CI writes these automatically on every deploy)
+
+services:
+  pocketbase:
+    image: ghcr.io/${GHCR_USERNAME}/clearoutspace-pocketbase:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    network_mode: host
+    env_file: ../.env
+    volumes:
+      - pb_data:/pb/pb_data
+
+  app:
+    image: ghcr.io/${GHCR_USERNAME}/clearoutspace:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    network_mode: host
+    env_file: ../.env
+    environment:
+      # Reaches PocketBase over loopback — works because both use network_mode: host
+      PB_INTERNAL_URL: http://localhost:8090
+    depends_on:
+      - pocketbase
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    network_mode: host
+    command: tunnel --no-autoupdate run
+    env_file: ../.env
+    depends_on:
+      - app
+      - pocketbase
+
+volumes:
+  pb_data:
+    driver: local

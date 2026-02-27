@@ -1,0 +1,34 @@
+# ── Local development ─────────────────────────────────────────────────────────
+# Builds images from source. No Cloudflare tunnel needed locally.
+#
+# Usage:
+#   docker compose -f docker/compose.local.yml up --build
+#
+# Requires a .env file at the repo root (copy from .env and set local values).
+
+services:
+  pocketbase:
+    build:
+      context: ../pocketbase
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    env_file: ../.env
+    volumes:
+      - pb_data:/pb/pb_data
+
+  app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    env_file: ../.env
+    environment:
+      PB_INTERNAL_URL: http://localhost:8090
+    depends_on:
+      - pocketbase
+
+volumes:
+  pb_data:
+    driver: local

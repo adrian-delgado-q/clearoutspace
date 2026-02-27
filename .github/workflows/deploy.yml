@@ -7,6 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/clearoutspace
+  PB_IMAGE_NAME: ${{ github.repository_owner }}/clearoutspace-pocketbase
 
 jobs:
   # ── 0. Run test suite ────────────────────────────────────────────────────────
@@ -30,9 +31,9 @@ jobs:
       - name: Run tests
         run: npm test
 
-  # ── 1. Build Docker image and push to GitHub Container Registry ─────────────
+  # ── 1. Build Docker images and push to GitHub Container Registry ─────────────
   build-and-push:
-    name: Build & Push image
+    name: Build & Push images
     runs-on: ubuntu-latest
     needs: test
     permissions:
@@ -56,7 +57,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags & labels)
+      - name: Extract metadata for Next.js app
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -65,7 +66,7 @@ jobs:
             type=sha,prefix=sha-,format=short
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
-      - name: Build and push
+      - name: Build and push Next.js app
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -75,9 +76,28 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ── 2. SSH into VPS and redeploy ─────────────────────────────────────────────
+      - name: Extract metadata for PocketBase
+        id: meta-pb
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.PB_IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push PocketBase
+        uses: docker/build-push-action@v5
+        with:
+          context: ./pocketbase
+          push: true
+          tags: ${{ steps.meta-pb.outputs.tags }}
+          labels: ${{ steps.meta-pb.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── 2. SSH into server and redeploy with docker compose ──────────────────────
   deploy:
-    name: Deploy to VPS
+    name: Deploy to server
     runs-on: ubuntu-latest
     needs: build-and-push
     environment: production
@@ -90,13 +110,28 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
+          envs: APP_ENV_FILE,IMAGE_TAG,GHCR_USERNAME
+          env:
+            IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+            GHCR_USERNAME: ${{ github.repository_owner }}
+            APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
           script: |
             set -e
-            cd /var/www/clearoutspace
-            echo "Pulling latest image…"
-            docker compose pull app
+            cd ~/clearoutspace
+
+            # Write the .env from the GitHub secret (single source of truth for all vars).
+            # GHCR_USERNAME and IMAGE_TAG are injected on top so compose picks up the
+            # correct image tag for this deploy without touching the base .env.
+            printf '%s\n' "${APP_ENV_FILE}" > .env
+            printf 'GHCR_USERNAME=%s\nIMAGE_TAG=%s\n' "${GHCR_USERNAME}" "${IMAGE_TAG}" >> .env
+
+            echo "Pulling images for tag ${IMAGE_TAG}…"
+            docker compose -f docker/compose.prod.yml pull
+
             echo "Restarting services…"
-            docker compose up -d --remove-orphans
+            docker compose -f docker/compose.prod.yml up -d --remove-orphans
+
             echo "Pruning old images…"
             docker image prune -f
-            echo "✅ Deploy complete."
+
+            echo "✅  Deploy complete (tag: ${IMAGE_TAG})"

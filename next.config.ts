@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
         port: "8090",
         pathname: "/api/files/**",
       },
-      // Production – PocketBase behind Caddy at cms.clearoutspaces.ca
+      // Production – PocketBase behind Cloudflare tunnel at cms.clearoutspaces.ca
       {
         protocol: "https",
         hostname: "cms.clearoutspaces.ca",
