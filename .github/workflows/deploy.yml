@@ -108,22 +108,19 @@ jobs:
         env:
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
           GHCR_USERNAME: ${{ github.repository_owner }}
-          APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
-          envs: APP_ENV_FILE,IMAGE_TAG,GHCR_USERNAME
+          envs: IMAGE_TAG,GHCR_USERNAME
           script: |
             set -e
             cd ~/clearoutspace
 
-            # Write the .env from the GitHub secret (single source of truth for all vars).
-            # GHCR_USERNAME and IMAGE_TAG are injected on top so compose picks up the
-            # correct image tag for this deploy without touching the base .env.
-            printf '%s\n' "${APP_ENV_FILE}" > .env
-            printf 'GHCR_USERNAME=%s\nIMAGE_TAG=%s\n' "${GHCR_USERNAME}" "${IMAGE_TAG}" >> .env
+            # Secrets live in /opt/clearoutspaces/.env (root-owned on the VPS).
+            # Append the dynamic deploy vars so compose picks up the right image tag.
+            printf 'GHCR_USERNAME=%s\nIMAGE_TAG=%s\n' "${GHCR_USERNAME}" "${IMAGE_TAG}" >> /opt/clearoutspaces/.env
 
             echo "Pulling images for tag ${IMAGE_TAG}…"
             docker compose -f docker/compose.prod.yml pull

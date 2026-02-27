@@ -7,14 +7,15 @@
 #   cms.clearoutspaces.ca  → http://localhost:8090
 #
 # Required .env values: GHCR_USERNAME, IMAGE_TAG, TUNNEL_TOKEN
-# (CI writes these automatically on every deploy)
+# On the VPS these live in /opt/clearoutspaces/.env (root-owned, 640).
+# CI appends GHCR_USERNAME and IMAGE_TAG to that file on each deploy.
 
 services:
   pocketbase:
     image: ghcr.io/${GHCR_USERNAME}/clearoutspace-pocketbase:${IMAGE_TAG:-latest}
     restart: unless-stopped
     network_mode: host
-    env_file: ../.env
+    env_file: /opt/clearoutspaces/.env
     volumes:
       - pb_data:/pb/pb_data
 
@@ -22,7 +23,7 @@ services:
     image: ghcr.io/${GHCR_USERNAME}/clearoutspace:${IMAGE_TAG:-latest}
     restart: unless-stopped
     network_mode: host
-    env_file: ../.env
+    env_file: /opt/clearoutspaces/.env
     environment:
       # Reaches PocketBase over loopback — works because both use network_mode: host
       PB_INTERNAL_URL: http://localhost:8090
@@ -34,7 +35,7 @@ services:
     restart: unless-stopped
     network_mode: host
     command: tunnel --no-autoupdate run
-    env_file: ../.env
+    env_file: /opt/clearoutspaces/.env
     depends_on:
       - app
       - pocketbase
