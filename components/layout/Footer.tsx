@@ -11,7 +11,7 @@ const FOOTER_LINKS = [
     { label: "Terms", href: "/terms" },
 ];
 
-const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "https://wa.me/12268992255";
+const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "";
 
 export default function Footer() {
     return (
@@ -25,7 +25,7 @@ export default function Footer() {
                             <span>Clearout<span className="text-[#146C54]">Spaces</span></span>
                         </div>
                         <p className="text-sm text-[#9CA3AF] leading-relaxed max-w-xs">
-                            Move-out specialists serving Toronto condos and apartments. Clearout, cleaning,
+                            Clearout Specialists serving Toronto condos and apartments. Clearout, cleaning,
                             and optional listing management — one team.
                         </p>
                     </div>

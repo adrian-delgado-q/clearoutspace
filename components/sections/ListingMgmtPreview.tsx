@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Container from "@/components/layout/Container";
-import { getStrapiMediaUrl } from "@/lib/strapi";
 
 interface ListingMgmtPreviewProps {
     title?: string;

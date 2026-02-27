@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { fetchListingBySlug, fetchGlobalSettings } from "@/lib/strapi";
-import { ListingsResponseSchema, GlobalSettingsSchema, parseSingleType } from "@/lib/schemas";
+import { fetchListingBySlug } from "@/lib/pocketbase";
+import { ListingsListSchema } from "@/lib/schemas";
 import Modal from "@/components/ui/Modal";
 import ListingDetail from "@/components/listings/ListingDetail";
 
@@ -13,30 +13,15 @@ interface PageProps {
 export default async function ListingModalPage({ params }: PageProps) {
     const { slug } = await params;
 
-    const [listingRaw, globalRaw] = await Promise.allSettled([
-        fetchListingBySlug(slug, { revalidate: 60 }),
-        fetchGlobalSettings(),
-    ]);
-
-    const listingParsed =
-        listingRaw.status === "fulfilled"
-            ? ListingsResponseSchema.safeParse(listingRaw.value)
-            : null;
-
-    const listing = listingParsed?.success ? listingParsed.data.data[0] : null;
+    const raw = await fetchListingBySlug(slug);
+    const parsed = ListingsListSchema.safeParse(raw);
+    const listing = parsed.success ? parsed.data.items[0] : null;
 
     if (!listing) notFound();
 
-    const global =
-        globalRaw.status === "fulfilled"
-            ? parseSingleType(GlobalSettingsSchema, globalRaw.value)
-            : null;
-
-    const waBase = global?.whatsappUrl ?? "https://wa.me/12268992255";
-
     return (
         <Modal>
-            <ListingDetail listing={listing} waBase={waBase} />
+            <ListingDetail listing={listing} waBase="https://wa.me/12268992255" />
         </Modal>
     );
 }

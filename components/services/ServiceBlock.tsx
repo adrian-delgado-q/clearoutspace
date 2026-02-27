@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Container from "@/components/layout/Container";
 import Badge from "@/components/ui/Badge";
-import { getStrapiMediaUrl } from "@/lib/strapi";
 import type { Service } from "@/lib/schemas";
 import { buildCtaUrl } from "@/lib/whatsapp";
 
@@ -14,12 +13,11 @@ interface ServiceBlockProps {
 
 export default function ServiceBlock({ service, index, ctaHref, fallbackImageUrl }: ServiceBlockProps) {
     const { name, sectionId, shortDescription, longDescription, startingPriceLabel,
-        typicalRangeText, isMostPopular, features, whatsIncluded, sideImage } = service.attributes;
+        typicalRangeText, isMostPopular, features, whatsIncluded, sideImage } = service;
 
-    const imgUrl = getStrapiMediaUrl(sideImage?.data?.attributes?.url);
-    const imgAlt = sideImage?.data?.attributes?.alternativeText ?? name;
-    const hasImage = !!sideImage?.data;
-    const resolvedImageUrl = hasImage ? imgUrl : (fallbackImageUrl ?? null);
+    const hasImage = !!sideImage;
+    const resolvedImageUrl = hasImage ? sideImage : (fallbackImageUrl ?? null);
+    const imgAlt = name;
 
     // Alternate image left/right: even = image left, odd = image right
     const imageLeft = index % 2 === 0;

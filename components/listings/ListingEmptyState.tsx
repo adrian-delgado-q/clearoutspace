@@ -1,6 +1,6 @@
 import { buildCtaUrl } from "@/lib/whatsapp";
 
-const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "https://wa.me/12268992255";
+const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "";
 
 const RECENTLY_SOLD = [
     { title: "IKEA KALLAX 4×4 Shelving Unit", price: "$85 CAD", area: "Liberty Village", condition: "Like New" },

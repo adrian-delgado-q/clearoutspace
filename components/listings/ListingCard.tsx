@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Badge from "@/components/ui/Badge";
-import { getStrapiMediaUrl } from "@/lib/strapi";
+import { getPbFileUrl } from "@/lib/pocketbase";
 import { pickupUrgency } from "@/lib/dates";
 import type { Listing } from "@/lib/schemas";
 
@@ -11,12 +11,11 @@ interface ListingCardProps {
 
 export default function ListingCard({ listing }: ListingCardProps) {
     const { title, slug, price, currency, area, availableUntil, condition, images, status, isFeatured } =
-        listing.attributes;
+        listing;
 
-    const firstImageUrl = getStrapiMediaUrl(
-        images?.data?.[0]?.attributes?.url,
-    );
-    const firstImageAlt = images?.data?.[0]?.attributes?.alternativeText ?? title;
+    const firstImageFilename = images?.[0] ?? null;
+    const firstImageUrl = getPbFileUrl(listing.collectionName, listing.id, firstImageFilename, { thumb: "800x600f" });
+    const firstImageAlt = title;
 
     const urgency = pickupUrgency(availableUntil);
     const isSold = status === "Sold";

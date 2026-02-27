@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | ClearoutSpaces",
   },
   description:
-    "Clearout, deposit-ready cleaning, and optional listing management — structured, coordinated, condo-ready. Toronto's move-out specialists.",
+    "Clearout, deposit-ready cleaning, and optional listing management — structured, coordinated, condo-ready. Toronto's Clearout Specialists.",
   keywords: [
     "move out clearout Toronto",
     "condo clearout Toronto",

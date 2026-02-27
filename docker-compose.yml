@@ -1,24 +1,51 @@
 services:
-  app:
-    image: ghcr.io/adrian-delgado-q/clearoutspace:latest
+  # ── PocketBase (CMS + API) ────────────────────────────────────────────────────
+  pocketbase:
+    build:
+      context: ./pocketbase
+      dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    network_mode: host
     env_file: .env
+    volumes:
+      - pb_data:/pb/pb_data
 
-  nginx:
+  # ── Next.js App ───────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    environment:
+      PB_INTERNAL_URL: http://localhost:8090
+    depends_on:
+      - pocketbase
+
+  # ── Caddy (VPS only — enable with: docker compose --profile vps up) ───────────
+  caddy:
     profiles:
       - vps
-    image: nginx:1.27-alpine
+    image: caddy:2-alpine
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp" # HTTP/3 (QUIC)
+    env_file: .env
     volumes:
-      - ./infra/nginx/clearoutspace.conf:/etc/nginx/conf.d/default.conf:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - /var/www/certbot:/var/www/certbot:ro
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       - app
+      - pocketbase
 
-volumes: {}
+volumes:
+  pb_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local

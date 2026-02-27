@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { fetchListings, fetchGlobalSettings } from "@/lib/strapi";
-import { ListingsResponseSchema, GlobalSettingsSchema, parseSingleType } from "@/lib/schemas";
+import { fetchListings } from "@/lib/pocketbase";
+import { ListingsListSchema } from "@/lib/schemas";
 import Container from "@/components/layout/Container";
 import ListingsClient from "@/components/listings/ListingsClient";
-import ListingEmptyState from "@/components/listings/ListingEmptyState";
 
 export const revalidate = 60;
 
@@ -15,30 +14,29 @@ export const metadata: Metadata = {
 
 async function getData() {
     try {
-        const [listingsRaw, globalRaw] = await Promise.allSettled([
-            fetchListings({}, { revalidate: 60 }),
-            fetchGlobalSettings(),
+        const [availableRaw, soldRaw] = await Promise.all([
+            fetchListings(),
+            fetchListings({
+                filter: `(status='Sold')`,
+                sort: "-updated",
+                perPage: "3",
+            }),
         ]);
 
-        let listings: ReturnType<typeof ListingsResponseSchema.parse>["data"] = [];
-        if (listingsRaw.status === "fulfilled") {
-            const parsed = ListingsResponseSchema.safeParse(listingsRaw.value);
-            if (parsed.success) listings = parsed.data.data;
-        }
+        const availableParsed = ListingsListSchema.safeParse(availableRaw);
+        const soldParsed = ListingsListSchema.safeParse(soldRaw);
 
-        const global = globalRaw.status === "fulfilled"
-            ? parseSingleType(GlobalSettingsSchema, globalRaw.value)
-            : null;
+        const listings = availableParsed.success ? availableParsed.data.items : [];
+        const soldListings = soldParsed.success ? soldParsed.data.items : [];
 
-        return { listings, global };
+        return { listings, soldListings };
     } catch {
-        return { listings: [], global: null };
+        return { listings: [], soldListings: [] };
     }
 }
 
 export default async function ListingsPage() {
-    const { listings, global } = await getData();
-    const waBase = global?.whatsappUrl ?? "https://wa.me/12268992255";
+    const { listings, soldListings } = await getData();
 
     return (
         <section className="section-padding bg-white">
@@ -61,7 +59,7 @@ export default async function ListingsPage() {
                 </div>
 
                 {/* Search + grid (client-side filter) */}
-                <ListingsClient listings={listings} />
+                <ListingsClient listings={listings} soldListings={soldListings} />
             </Container>
         </section>
     );

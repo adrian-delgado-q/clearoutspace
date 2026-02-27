@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { fetchListingBySlug, fetchGlobalSettings, getStrapiMediaUrl } from "@/lib/strapi";
-import { ListingsResponseSchema, GlobalSettingsSchema, parseSingleType } from "@/lib/schemas";
-import { mapStrapiSeoToMetadata } from "@/lib/seo";
+import { fetchListingBySlug, fetchActiveListingSlugs, getPbFileUrl } from "@/lib/pocketbase";
+import { ListingsListSchema } from "@/lib/schemas";
+import { buildMetadata } from "@/lib/seo";
 import Container from "@/components/layout/Container";
 import ListingDetail from "@/components/listings/ListingDetail";
 import FinalCTA from "@/components/sections/FinalCTA";
@@ -14,62 +14,45 @@ interface PageProps {
 }
 
 async function getData(slug: string) {
-    const [listingRaw, globalRaw] = await Promise.allSettled([
-        fetchListingBySlug(slug, { revalidate: 60 }),
-        fetchGlobalSettings(),
-    ]);
+    const raw = await fetchListingBySlug(slug);
+    const parsed = ListingsListSchema.safeParse(raw);
+    const listing = parsed.success ? parsed.data.items[0] : null;
+    return { listing };
+}
 
-    const listingParsed =
-        listingRaw.status === "fulfilled"
-            ? ListingsResponseSchema.safeParse(listingRaw.value)
-            : null;
-
-    const listing = listingParsed?.success ? listingParsed.data.data[0] : null;
-    const global =
-        globalRaw.status === "fulfilled"
-            ? parseSingleType(GlobalSettingsSchema, globalRaw.value)
-            : null;
-
-    return { listing, global };
+export async function generateStaticParams() {
+    const slugs = await fetchActiveListingSlugs();
+    return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const { listing } = await getData(slug);
 
-    if (!listing) {
-        return { title: "Listing Not Found | ClearoutSpaces" };
-    }
+    if (!listing) return { title: "Listing Not Found | ClearoutSpaces" };
 
-    const { title, description, price, currency, area, images, seo } = listing.attributes;
+    const { title, description, price, currency, area, images, collectionName, id } = listing;
+    const ogImage = images[0] ? getPbFileUrl(collectionName, id, images[0]) : undefined;
 
-    const ogImage =
-        getStrapiMediaUrl(seo?.shareImage?.data?.attributes?.url) ??
-        getStrapiMediaUrl(images?.data?.[0]?.attributes?.url);
-
-    return {
-        ...mapStrapiSeoToMetadata(seo, {
-            title: `${title} – $${price} ${currency} | ClearoutSpaces`,
-            description:
-                description?.substring(0, 155) ??
-                `${title} available for pickup${area ? ` in ${area}` : ""}. Managed by ClearoutSpaces.`,
-            path: `/listings/${slug}`,
-        }),
-        openGraph: {
-            title: `${title} – $${price} ${currency}`,
-            description: `Available${area ? ` in ${area}` : ""}. Managed by ClearoutSpaces.`,
-            images: ogImage ? [{ url: ogImage, width: 1200, height: 900 }] : undefined,
-        },
-    };
+    return buildMetadata({
+        title: `${title} – $${price} ${currency} | ClearoutSpaces`,
+        description:
+            description?.substring(0, 155) ??
+            `${title} available for pickup${area ? ` in ${area}` : ""}. Managed by ClearoutSpaces.`,
+        path: `/listings/${slug}`,
+        ogImage,
+        ogImageWidth: 1200,
+        ogImageHeight: 900,
+    });
 }
 
 export default async function ListingDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    const { listing, global } = await getData(slug);
+    const { listing } = await getData(slug);
 
     if (!listing) notFound();
 
-    const waBase = global?.whatsappUrl ?? "https://wa.me/12268992255";
+    const waBase = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "";
 
     return (
         <>
@@ -80,7 +63,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
                         Listings
                     </a>
                     <span aria-hidden="true">›</span>
-                    <span className="text-[#111111] truncate max-w-xs">{listing.attributes.title}</span>
+                    <span className="text-[#111111] truncate max-w-xs">{listing.title}</span>
                 </Container>
             </div>
 

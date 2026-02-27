@@ -22,8 +22,13 @@
  */
 
 const STRAPI_URL = process.env.STRAPI_URL ?? "http://localhost:1337";
-const ADMIN_EMAIL = process.env.STRAPI_ADMIN_EMAIL ?? "admin@clearoutspaces.ca";
-const ADMIN_PASSWORD = process.env.STRAPI_ADMIN_PASSWORD ?? "Admin1234!";
+const ADMIN_EMAIL = process.env.STRAPI_ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.STRAPI_ADMIN_PASSWORD;
+
+if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    console.error("Error: STRAPI_ADMIN_EMAIL and STRAPI_ADMIN_PASSWORD must be set.");
+    process.exit(1);
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -14,7 +14,7 @@ const NAV_LINKS = [
     { label: "FAQ", href: "/faq" },
 ];
 
-const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "https://wa.me/12268992255";
+const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? "";
 const CTA_TEXT = "Get Estimate";
 
 const WaIcon = () => (

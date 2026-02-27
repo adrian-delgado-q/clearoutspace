@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { fetchFaqPage, fetchGlobalSettings } from "@/lib/strapi";
-import { FAQPageSchema, GlobalSettingsSchema, parseSingleType } from "@/lib/schemas";
-import { mapStrapiSeoToMetadata } from "@/lib/seo";
+import { buildMetadata } from "@/lib/seo";
 import Container from "@/components/layout/Container";
 import FinalCTA from "@/components/sections/FinalCTA";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 
 export const revalidate = 3600;
+
+const WA_BASE = "https://wa.me/12268992255";
 
 const DEFAULT_FAQS = [
     {
@@ -61,20 +61,8 @@ const DEFAULT_FAQS = [
     },
 ];
 
-async function getData() {
-    try {
-        const [pageRaw, globalRaw] = await Promise.allSettled([fetchFaqPage(), fetchGlobalSettings()]);
-        const page = pageRaw.status === "fulfilled" ? parseSingleType(FAQPageSchema, pageRaw.value) : null;
-        const global = globalRaw.status === "fulfilled" ? parseSingleType(GlobalSettingsSchema, globalRaw.value) : null;
-        return { page, global };
-    } catch {
-        return { page: null, global: null };
-    }
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-    const { page } = await getData();
-    return mapStrapiSeoToMetadata(page?.seo, {
+    return buildMetadata({
         title: "FAQ – ClearoutSpaces",
         description:
             "Answers to common questions about move-out clearouts, cleaning, listing management, and pricing in Toronto.",
@@ -83,11 +71,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FAQPage() {
-    const { page, global } = await getData();
-    const waBase = global?.whatsappUrl ?? "https://wa.me/12268992255";
-
-    const faqs = page?.faqs?.length ? page.faqs : DEFAULT_FAQS;
-
     return (
         <>
             <section className="py-16 md:py-24 bg-white border-b border-[#EAEAEA]">
@@ -97,7 +80,7 @@ export default async function FAQPage() {
                         className="font-semibold text-[#111111] leading-[1.05] max-w-2xl"
                         style={{ fontSize: "clamp(32px, 5vw, 56px)" }}
                     >
-                        {page?.pageTitle ?? "Frequently Asked Questions"}
+                        Frequently Asked Questions
                     </h1>
                 </Container>
             </section>
@@ -105,12 +88,12 @@ export default async function FAQPage() {
             <section className="section-padding bg-[#F7F7F7]">
                 <Container>
                     <div className="max-w-3xl">
-                        <FAQAccordion faqs={faqs} />
+                        <FAQAccordion faqs={DEFAULT_FAQS} />
                     </div>
                 </Container>
             </section>
 
-            <FinalCTA ctaHref={waBase} source="faq" />
+            <FinalCTA ctaHref={WA_BASE} source="faq" />
         </>
     );
 }

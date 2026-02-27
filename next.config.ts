@@ -1,15 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
 
-const STRAPI_HOST = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
-
-let strapiHostname = "localhost";
-try {
-  strapiHostname = new URL(STRAPI_HOST).hostname;
-} catch {
-  // keep default
-}
-
 const nextConfig: NextConfig = {
   output: "standalone",
   devIndicators: false,
@@ -17,24 +8,23 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   images: {
+    // Allow the image optimizer to fetch from localhost (PocketBase in local/Docker dev).
+    // In production the src URLs point to cms.clearoutspaces.ca, not localhost.
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
+      // Local development – PocketBase on localhost:8090
       {
         protocol: "http",
-        hostname: strapiHostname,
-        port: "",
-        pathname: "/uploads/**",
+        hostname: "localhost",
+        port: "8090",
+        pathname: "/api/files/**",
       },
+      // Production – PocketBase behind Caddy at cms.clearoutspaces.ca
       {
         protocol: "https",
-        hostname: strapiHostname,
+        hostname: "cms.clearoutspaces.ca",
         port: "",
-        pathname: "/uploads/**",
-      },
-      // Cloudinary fallback
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
+        pathname: "/api/files/**",
       },
     ],
   },

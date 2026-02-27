@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { fetchPricingPage, fetchGlobalSettings } from "@/lib/strapi";
-import { PricingPageSchema, GlobalSettingsSchema, parseSingleType } from "@/lib/schemas";
-import { mapStrapiSeoToMetadata } from "@/lib/seo";
+import { buildMetadata } from "@/lib/seo";
 import Container from "@/components/layout/Container";
 import FinalCTA from "@/components/sections/FinalCTA";
 
@@ -24,20 +22,8 @@ const DEFAULT_VARIABLES = [
     "Disassembly required for bulky items",
 ];
 
-async function getData() {
-    try {
-        const [pageRaw, globalRaw] = await Promise.allSettled([fetchPricingPage(), fetchGlobalSettings()]);
-        const page = pageRaw.status === "fulfilled" ? parseSingleType(PricingPageSchema, pageRaw.value) : null;
-        const global = globalRaw.status === "fulfilled" ? parseSingleType(GlobalSettingsSchema, globalRaw.value) : null;
-        return { page, global };
-    } catch {
-        return { page: null, global: null };
-    }
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-    const { page } = await getData();
-    return mapStrapiSeoToMetadata(page?.seo, {
+    return buildMetadata({
         title: "Pricing – ClearoutSpaces",
         description:
             "Transparent move-out pricing for Toronto condos. Clearout, cleaning, and bundle packages. No surprise fees.",
@@ -46,13 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PricingPage() {
-    const { page, global } = await getData();
-    const waBase = global?.whatsappUrl ?? "https://wa.me/12268992255";
-
-    const groups = page?.pricingGroups?.length ? page.pricingGroups : DEFAULT_GROUPS;
-    const variables = page?.variablesChecklist?.length
-        ? page.variablesChecklist.map((v) => v.text)
-        : DEFAULT_VARIABLES;
+    const waBase = "https://wa.me/12268992255";
+    const groups = DEFAULT_GROUPS;
+    const variables = DEFAULT_VARIABLES;
 
     return (
         <>
@@ -64,17 +46,12 @@ export default async function PricingPage() {
                         className="font-semibold text-[#111111] leading-[1.05] max-w-2xl mb-4"
                         style={{ fontSize: "clamp(32px, 5vw, 56px)" }}
                     >
-                        {page?.pageTitle ?? "Pricing"}
+                        Pricing
                     </h1>
-                    {page?.introText && (
-                        <p className="text-lg text-[#5A5A5A] max-w-2xl leading-relaxed">{page.introText}</p>
-                    )}
-                    {!page?.introText && (
-                        <p className="text-lg text-[#5A5A5A] max-w-2xl leading-relaxed">
-                            Ranges below are typical for Toronto condos. Send 2–3 photos on WhatsApp for an exact quote within
-                            minutes. The price we quote is the price you pay — no surprise heavy-item fees.
-                        </p>
-                    )}
+                    <p className="text-lg text-[#5A5A5A] max-w-2xl leading-relaxed">
+                        Ranges below are typical for Toronto condos. Send 2–3 photos on WhatsApp for an exact quote within
+                        minutes. The price we quote is the price you pay — no surprise heavy-item fees.
+                    </p>
                 </Container>
             </section>
 
@@ -177,8 +154,8 @@ export default async function PricingPage() {
             </section>
 
             <FinalCTA
-                title={page?.finalCtaTitle ?? "Get your personalised quote"}
-                subtitle={page?.finalCtaSubtitle ?? "No forms. Just WhatsApp."}
+                title="Get your personalised quote"
+                subtitle="No forms. Just WhatsApp."
                 ctaHref={waBase}
                 source="pricing"
             />

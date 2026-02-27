@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Badge from "@/components/ui/Badge";
-import { getStrapiMediaUrl } from "@/lib/strapi";
+import { getPbFileUrl } from "@/lib/pocketbase";
 import { buildListingReserveUrl } from "@/lib/whatsapp";
 import { formatLongDate, pickupUrgency, daysUntil } from "@/lib/dates";
 import type { Listing } from "@/lib/schemas";
@@ -17,13 +17,13 @@ export default function ListingDetail({ listing, waBase = "https://wa.me/1226899
     const {
         title, slug, price, currency, area, availableUntil, pickupWindowText, pickupNotes,
         condition, dimensions, description, images, status, managedBy,
-    } = listing.attributes;
+    } = listing;
 
-    const imageList = images?.data ?? [];
+    const imageList = images ?? [];
     const [activeIdx, setActiveIdx] = useState(0);
 
-    const activeImageUrl = getStrapiMediaUrl(imageList[activeIdx]?.attributes?.url);
-    const activeImageAlt = imageList[activeIdx]?.attributes?.alternativeText ?? title;
+    const activeImageUrl = getPbFileUrl(listing.collectionName, listing.id, imageList[activeIdx] ?? null, { thumb: "1200x900f" });
+    const activeImageAlt = title;
 
     const isSold = status === "Sold";
     const isPending = status === "Pending";
@@ -77,8 +77,8 @@ export default function ListingDetail({ listing, waBase = "https://wa.me/1226899
                                     ].join(" ")}
                                 >
                                     <Image
-                                        src={getStrapiMediaUrl(img.attributes.url)}
-                                        alt={img.attributes.alternativeText ?? `Image ${i + 1}`}
+                                        src={getPbFileUrl(listing.collectionName, listing.id, img, { thumb: "200x200f" })}
+                                        alt={`Image ${i + 1}`}
                                         fill
                                         className="object-cover"
                                         sizes="64px"

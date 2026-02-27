@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { fetchActiveListingSlugs } from "@/lib/strapi";
+import { fetchActiveListingSlugs } from "@/lib/pocketbase";
 
 const BASE_URL = "https://clearoutspaces.ca";
 
@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
   } catch {
-    // If Strapi is unreachable, omit dynamic listing pages gracefully
+    // If PocketBase is unreachable, omit dynamic listing pages gracefully
   }
 
   return [...staticPages, ...listingPages];

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Container from "@/components/layout/Container";
 import { buildCtaUrl } from "@/lib/whatsapp";
+import RotatingWord from "@/components/ui/RotatingWord";
 
 interface HeroProps {
     title?: string;
@@ -24,6 +25,8 @@ const TRUST_ITEMS = [
     { icon: "building", label: "Condo-Compliant" },
     { icon: "lock", label: "No Address Stored" },
 ];
+
+const ROTATING_HERO_WORDS = ["Move-Out", "Clear-Out", "Clean-Out", "Sell-Off"];
 
 const TrustIcon = ({ type }: { type: string }) => {
     if (type === "building") return (
@@ -52,6 +55,13 @@ export default function Hero({
     imageUrl = "/hero.png",
     imageAlt = "ClearoutSpaces crew at work",
 }: HeroProps) {
+    const titleMoveOutIndex = title.indexOf("Move-Out");
+    const titleStart = titleMoveOutIndex >= 0 ? title.slice(0, titleMoveOutIndex) : "";
+    const titleEnd =
+        titleMoveOutIndex >= 0
+            ? title.slice(titleMoveOutIndex + "Move-Out".length)
+            : "";
+
     return (
         <section className="section-padding bg-white border-b border-[#EAEAEA]">
             <Container>
@@ -59,13 +69,25 @@ export default function Hero({
                     {/* Text */}
                     <div>
                         <p className="text-xs font-semibold uppercase tracking-widest text-[#146C54] mb-5">
-                            Toronto&apos;s Move-Out Specialists
+                            Toronto&apos;s Clearout Specialists
                         </p>
                         <h1
                             className="font-semibold text-[#111111] leading-tight tracking-tight mb-6"
                             style={{ fontSize: "clamp(36px, 5.5vw, 60px)" }}
                         >
-                            {title}
+                            {titleMoveOutIndex >= 0 ? (
+                                <>
+                                    {titleStart}
+                                    <RotatingWord
+                                        words={ROTATING_HERO_WORDS}
+                                        intervalMs={2000}
+                                        className="text-[#146C54]"
+                                    />
+                                    {titleEnd}
+                                </>
+                            ) : (
+                                title
+                            )}
                         </h1>
                         <p className="text-lg leading-relaxed text-[#111111] mb-2">{subtitle}</p>
                         <p className="text-base text-[#5A5A5A] mb-8">{supporting}</p>
