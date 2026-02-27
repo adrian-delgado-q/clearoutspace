@@ -105,16 +105,16 @@ jobs:
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          GHCR_USERNAME: ${{ github.repository_owner }}
+          APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           envs: APP_ENV_FILE,IMAGE_TAG,GHCR_USERNAME
-          env:
-            IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
-            GHCR_USERNAME: ${{ github.repository_owner }}
-            APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
           script: |
             set -e
             cd ~/clearoutspace
