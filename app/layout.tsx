@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     description:
       "Clearout. Deposit-ready cleaning. Optional listing management. Structured, coordinated, condo-ready.",
     siteName: "ClearoutSpaces",
-    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "ClearoutSpaces" }],
+    images: [{ url: "/opengraphimage.png", width: 1200, height: 630, alt: "ClearoutSpaces" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ClearoutSpaces – Move-Out Done Right",
     description: "Clearout. Deposit-ready cleaning. Optional listing management.",
-    images: ["/og-default.png"],
+    images: ["/opengraphimage.png"],
   },
   alternates: { canonical: BASE_URL },
   robots: {

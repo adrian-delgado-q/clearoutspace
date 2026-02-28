@@ -119,14 +119,17 @@ jobs:
             cd ~/clearoutspace
 
             # Secrets live in /opt/clearoutspaces/.env (root-owned on the VPS).
-            # Append the dynamic deploy vars so compose picks up the right image tag.
+            # Update the dynamic deploy vars (remove stale values first to avoid duplicates).
+            sed -i '/^GHCR_USERNAME=/d;/^IMAGE_TAG=/d' /opt/clearoutspaces/.env
             printf 'GHCR_USERNAME=%s\nIMAGE_TAG=%s\n' "${GHCR_USERNAME}" "${IMAGE_TAG}" >> /opt/clearoutspaces/.env
 
+            # --env-file makes compose resolve ${VAR} substitutions in the compose file itself
+            # (e.g. image names). env_file: in services handles runtime injection inside containers.
             echo "Pulling images for tag ${IMAGE_TAG}…"
-            docker compose -f docker/compose.prod.yml pull
+            docker compose --env-file /opt/clearoutspaces/.env -f docker/compose.prod.yml pull
 
             echo "Restarting services…"
-            docker compose -f docker/compose.prod.yml up -d --remove-orphans
+            docker compose --env-file /opt/clearoutspaces/.env -f docker/compose.prod.yml up -d --remove-orphans
 
             echo "Pruning old images…"
             docker image prune -f

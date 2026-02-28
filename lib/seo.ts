@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const BASE_URL = "https://clearoutspaces.ca";
-const DEFAULT_OG = "/og-default.png";
+const DEFAULT_OG = "/opengraphimage.png";
 
 /**
  * Build Next.js Metadata for a page.
