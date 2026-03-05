@@ -51,7 +51,7 @@ export default function Hero({
     subtitle = "Clearout. Deposit-ready cleaning. Optional listing management.",
     supporting = "Structured, coordinated, condo-ready.",
     ctaText = "Get My Estimate",
-    ctaHref = "https://wa.me/12268992255",
+    ctaHref = "https://wa.me/16479227067",
     imageUrl = "/hero.png",
     imageAlt = "ClearoutSpaces crew at work",
 }: HeroProps) {

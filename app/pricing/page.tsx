@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PricingPage() {
-    const waBase = "https://wa.me/12268992255";
+    const waBase = "https://wa.me/16479227067";
     const groups = DEFAULT_GROUPS;
     const variables = DEFAULT_VARIABLES;
 

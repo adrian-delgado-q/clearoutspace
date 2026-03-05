@@ -125,7 +125,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-    const waBase = "https://wa.me/12268992255";
+    const waBase = "https://wa.me/16479227067";
     const services = FALLBACK_SERVICES;
 
     return (

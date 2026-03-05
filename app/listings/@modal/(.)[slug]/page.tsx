@@ -21,7 +21,7 @@ export default async function ListingModalPage({ params }: PageProps) {
 
     return (
         <Modal>
-            <ListingDetail listing={listing} waBase="https://wa.me/12268992255" />
+            <ListingDetail listing={listing} waBase="https://wa.me/16479227067" />
         </Modal>
     );
 }

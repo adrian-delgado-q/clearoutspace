@@ -93,7 +93,7 @@ async function seedGlobalSettings(token) {
     console.log("  Seeding Global Settings…");
     await apiPut(token, "global-setting", {
         siteName: "ClearoutSpaces",
-        whatsappUrl: "https://wa.me/12268992255",
+        whatsappUrl: "https://wa.me/16479227067",
         cityLabel: "Toronto",
         primaryCtaText: "Get My Estimate",
         featureFlags: { showListingsPreviewOnHome: false },

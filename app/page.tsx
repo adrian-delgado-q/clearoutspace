@@ -9,7 +9,7 @@ import FinalCTA from "@/components/sections/FinalCTA";
 
 export const revalidate = 3600;
 
-const WA_BASE = "https://wa.me/12268992255";
+const WA_BASE = "https://wa.me/16479227067";
 const CTA_TEXT = "Get My Estimate";
 
 export async function generateMetadata(): Promise<Metadata> {

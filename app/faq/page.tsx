@@ -6,7 +6,7 @@ import FAQAccordion from "@/components/sections/FAQAccordion";
 
 export const revalidate = 3600;
 
-const WA_BASE = "https://wa.me/12268992255";
+const WA_BASE = "https://wa.me/16479227067";
 
 const DEFAULT_FAQS = [
     {

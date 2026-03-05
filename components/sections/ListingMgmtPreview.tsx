@@ -21,7 +21,7 @@ export default function ListingMgmtPreview({
     title = "Optional: Listing Management",
     bullets = DEFAULT_BULLETS,
     imageUrl,
-    ctaHref = "https://wa.me/12268992255",
+    ctaHref = "https://wa.me/16479227067",
 }: ListingMgmtPreviewProps) {
     const displayBullets = bullets.length > 0 ? bullets : DEFAULT_BULLETS;
     return (

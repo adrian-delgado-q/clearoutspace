@@ -13,7 +13,7 @@ interface ListingDetailProps {
     waBase?: string;
 }
 
-export default function ListingDetail({ listing, waBase = "https://wa.me/12268992255" }: ListingDetailProps) {
+export default function ListingDetail({ listing, waBase = "https://wa.me/16479227067" }: ListingDetailProps) {
     const {
         title, slug, price, currency, area, availableUntil, pickupWindowText, pickupNotes,
         condition, dimensions, description, images, status, managedBy,
